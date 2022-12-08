@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name": "api-iptv-m3u-to-json",
+    "name": "scraping-um-node-js",
     "builds": [
        { "src": "index.js", "use": "@vercel/node" }
     ],
