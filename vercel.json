@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "name": "api-iptv-m3u-to-json",
+    "builds": [
+       { "src": "index.js", "use": "@vercel/node" }
+    ],
+    "routes": [
+       { "src": "/(.*)", "dest": "/index.js" }
+    ]
+ }
