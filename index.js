@@ -12,97 +12,97 @@ app.get('/', (req, res) => {
 async function scrapePost(url) {
     var data = {};
     const agent = randUserAgent("chrome", "linux");
-        await axios.get(url,{
-            headers: { 
-                'User-Agent':agent,
-                'Accept': 'text/html, text/plain, */*',
-                'Accept-Encoding': '*',
-                'Content-Type': 'text/html; charset=utf-8',
-            }
-        }).then((response) => {
-           
-            if(response.status){
-                const posts = [];
-                const $ = cheerio.load(response.data);
-                
-                $('article.post-entry').each((i, el) => {
-                    const post = {
-                        title: $(el).find('h2 a').text(),
-                        link: "post/slug?s="+$(el).find('h2 a').attr('href').replace('https://universitasmulia.ac.id/', ''),
-                        image: $(el).find('.blog-meta img').attr('src'),
-                        date: $(el).find('time').attr('datetime'),
-                        excerpt: $(el).find('.entry-content').text(),
-                    };
-                    posts.push(post);
-                });
-                data = {
-                    status:200,
-                    data:posts
+    await axios.get(url, {
+        headers: {
+            'User-Agent': agent,
+            'Accept': 'text/html, text/plain, */*',
+            'Accept-Encoding': '*',
+            'Content-Type': 'text/html; charset=utf-8',
+        }
+    }).then((response) => {
+
+        if (response.status) {
+            const posts = [];
+            const $ = cheerio.load(response.data);
+
+            $('article.post-entry').each((i, el) => {
+                const post = {
+                    title: $(el).find('h2 a').text(),
+                    link: "post/slug?s=" + $(el).find('h2 a').attr('href').replace('https://universitasmulia.ac.id/', ''),
+                    image: $(el).find('.blog-meta img').attr('src'),
+                    date: $(el).find('time').attr('datetime'),
+                    excerpt: $(el).find('.entry-content').text(),
                 };
-            } else {
-                data =   {
-                    status:404,
-                    data:"Not Found"
-                };
-            }
-        }).catch((err) => {
-            data =   {
-                status:500,
-                data:err
+                posts.push(post);
+            });
+            data = {
+                status: 200,
+                data: posts
             };
-        });
+        } else {
+            data = {
+                status: 404,
+                data: "Not Found"
+            };
+        }
+    }).catch((err) => {
+        data = {
+            status: 500,
+            data: err
+        };
+    });
     return data;
 }
 
 async function scrapePostDetail(url) {
     var data = {};
     const agent = randUserAgent("chrome", "linux");
-        const { data } = await axios.get(url,{
-            headers: { 
-                'User-Agent':agent,
-                'Accept': 'text/html, text/plain, */*',
-                'Accept-Encoding': '*',
-                'Content-Type': 'text/html; charset=utf-8',
-            }
-        }).then((response) => {
-            if(response.status == 200){
-                try {
-        
-                    let post = {};
-                    
-                    const $ = cheerio.load(response.data);
-                    
-                    post = {
-                        title: $('.entry-content-wrapper header.entry-content-header .post-title').text(),
-                        categories: $('.entry-content-wrapper header.entry-content-header .blog-categories').text().split(', '),
-                        image: $('.entry-content-wrapper .big-preview a').attr('href'),
-                        date: $('.entry-content-wrapper time.date-container').attr('datetime'),
-                        description: $('.entry-content-wrapper .entry-content').text(),
-                    };
-                    data = {
-                        status:response.status,
-                        data:post
-                    }
-                } catch (err) {
-                    data = {
-                        status:500,
-                        data:err
-                    }
-                }
-            } else {
+    await axios.get(url, {
+        headers: {
+            'User-Agent': agent,
+            'Accept': 'text/html, text/plain, */*',
+            'Accept-Encoding': '*',
+            'Content-Type': 'text/html; charset=utf-8',
+        }
+    }).then((response) => {
+        if (response.status == 200) {
+            try {
+
+                let post = {};
+
+                const $ = cheerio.load(response.data);
+
+                post = {
+                    title: $('.entry-content-wrapper header.entry-content-header .post-title').text(),
+                    categories: $('.entry-content-wrapper header.entry-content-header .blog-categories').text().split(', '),
+                    image: $('.entry-content-wrapper .big-preview a').attr('href'),
+                    date: $('.entry-content-wrapper time.date-container').attr('datetime'),
+                    description: $('.entry-content-wrapper .entry-content').text(),
+                };
                 data = {
-                    status:response.status,
-                    data:"Ops"
+                    status: response.status,
+                    data: post
+                }
+            } catch (err) {
+                data = {
+                    status: 500,
+                    data: err
                 }
             }
-        }).catch((err) => {
-            data =   {
-                status:500,
-                data:err
-            };
-        })
+        } else {
+            data = {
+                status: response.status,
+                data: "Ops"
+            }
+        }
+    }).catch((err) => {
+        data = {
+            status: 500,
+            data: err
+        };
+    })
     return data;
-    
+
 }
 
 app.get('/post', async (req, res) => {
@@ -123,5 +123,5 @@ app.get('/post/slug', async (req, res) => {
 
 const port = 8080;
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+    console.log(`Server listening on port ${port}`);
 });
