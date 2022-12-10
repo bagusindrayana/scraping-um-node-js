@@ -197,7 +197,7 @@ async function getJadwal(_cookie) {
                     
                     if($(el).find('th').length <= 0){
                         if($(el).find('td').eq(0).attr('rowspan') == undefined || $(el).find('td').eq(0).attr('rowspan') == ""){
-                            if($(el).find('td').attr('colspan') == undefined || $(el).find('td').attr('colspan') == ""){
+                            if($(el).find('td').length > 1 && ($(el).find('td').eq(1).attr('colspan') == undefined || $(el).find('td').eq(1).attr('colspan') == "")){
                                 const jadwal = {
                                     hari:hari,
                                     jam: $(el).find('td').eq(0).text(),
