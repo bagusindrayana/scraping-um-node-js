@@ -52,6 +52,11 @@ app.post('/siam/biodata', async (req, res) => {
     res.status(results.status).json(results.data);
 });
 
+app.post('/siam/neraca', async (req, res) => {
+    const results = await api.getNeraca(req.body._session);
+    res.status(results.status).json(results.data);
+});
+
 
 const port = 8080;
 app.listen(port, () => {

@@ -165,8 +165,6 @@ async function login(username,password) {
 
 
 async function getJadwal(_cookie) {
-
-    
     const agent = randUserAgent("chrome", "linux");
     await axios.get("https://sias.universitasmulia.ac.id/siam/cetak-jadwal-kuliah.html",{
         headers: {
@@ -297,7 +295,7 @@ async function getBiodata(_cookie) {
                     
                     if($(el).find('td').attr('colspan') == undefined || $(el).find('td').attr('colspan') == ""){
                         var c = $(el).find('td').eq(0).text();
-                        biodatas[c.toLowerCase().replace(" ","_")] = $(el).find('td').eq(1).text().trim();
+                        biodatas[c.toLowerCase().replace(" ","_")] = $(el).find('td').eq(1).text().replace(/\s+/g, ' ').trim();
                         
                     }
                 });
@@ -328,12 +326,84 @@ async function getBiodata(_cookie) {
 
 }
 
+async function getNeraca(_cookie) {
+    
+    await axios.get("https://sias.universitasmulia.ac.id/siam/neraca.html",{
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.95 Safari/537.36',
+            'Accept': 'text/html, text/plain, */*',
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Origin": "https://sias.universitasmulia.ac.id",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Dest": "empty",
+            "Referer": "https://sias.universitasmulia.ac.id/siam/login.html",
+            "Accept-Encoding": "gzip, deflate",
+            'Set-Cookie':_cookie,
+            'Cookie':_cookie
+        },
+        withCredentials: true
+    }).then((response) => {
+        if (response.status == 200) {
+            try {
+                
+                const transaksis = [];
+                const $ = cheerio.load(response.data);
+                if($(".content table").length <= 0){
+                    console.log("empty");
+                }
+                console.log($("table").length);
+                $(".content table.table tbody tr").each((i,el)=>{
+                    
+                   if($(el).find('td').eq(0).attr('colspan') == undefined || $(el).find('td').eq(0).attr('colspan') == ""){
+                    const transaksi = {
+                        nama_transaksi:$(el).find('td').eq(1).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                        debet:$(el).find('td').eq(2).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                        kredit:$(el).find('td').eq(3).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                        saldo:$(el).find('td').eq(4).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                    };
+                    transaksis.push(transaksi);
+                   } else if($(el).find('td').eq(0).attr('colspan') == 2){
+                    const transaksi = {
+                        nama_transaksi:$(el).find('td').eq(0).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                        debet:$(el).find('td').eq(1).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                        kredit:$(el).find('td').eq(2).text().replace(/\s+/g, ' ').trim().replace(/(\r\n|\n|\r)/gm, ""),
+                        saldo:"",
+                    };
+                    transaksis.push(transaksi);
+                   }
+                });
+                data = {
+                    status: response.status,
+                    data: transaksis
+                }
+            } catch (err) {
+                data = {
+                    status: 500,
+                    data: err
+                }
+            }
+        } else {
+            data = {
+                status: response.status,
+                data: "Ops"
+            }
+        }
+    }).catch((err) => {
+        data = {
+            status: 500,
+            data: err
+        };
+    })
+    return data;
 
+}
 
 module.exports = {
     scrapePost:scrapePost,
     scrapePostDetail:scrapePostDetail,
     login:login,
     getJadwal:getJadwal,
-    getBiodata:getBiodata
+    getBiodata:getBiodata,
+    getNeraca:getNeraca
 };
