@@ -12,7 +12,9 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 const api = require('./api');
 
 app.get('/', (req, res) => {
-    res.end("All data from https://universitasmulia.ac.id");
+    res.json({
+        "message": "Semua data hasil scraping langsung dari website universitasmulia.ac.id dan sias.universitasmulia.ac.id/siam"
+    });
 });
 
 
