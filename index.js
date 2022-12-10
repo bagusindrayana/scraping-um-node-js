@@ -45,6 +45,11 @@ app.post('/siam/jadwal-kuliah', async (req, res) => {
     res.status(results.status).json(results.data);
 });
 
+app.post('/siam/biodata', async (req, res) => {
+    const results = await api.getBiodata(req.body._session);
+    res.status(results.status).json(results.data);
+});
+
 
 const port = 8080;
 app.listen(port, () => {

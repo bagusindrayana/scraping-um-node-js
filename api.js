@@ -211,6 +211,91 @@ async function getJadwal(_cookie) {
                         } else {
                             hari = $(el).find('td').eq(0).text();
                             const jadwal = {
+                                hari: $(el).find('td').eq(1).text(),
+                                jam: "",
+                                kode: $(el).find('td').eq(2).text(),
+                                nama: $(el).find('td').eq(3).text(),
+                                sks: $(el).find('td').eq(4).text(),
+                                kelas: $(el).find('td').eq(5).text(),
+                                ruang: $(el).find('td').eq(6).text(),
+                                dosen: $(el).find('td').eq(7).text(),
+                            };
+                            jadwals.push(jadwal);
+                        }
+                    }
+                });
+                data = {
+                    status: response.status,
+                    data: jadwals
+                }
+            } catch (err) {
+                data = {
+                    status: 500,
+                    data: err
+                }
+            }
+        } else {
+            data = {
+                status: response.status,
+                data: "Ops"
+            }
+        }
+    }).catch((err) => {
+        data = {
+            status: 500,
+            data: err
+        };
+    })
+    return data;
+
+}
+
+async function getBiodata(_cookie) {
+
+    
+    const agent = randUserAgent("chrome", "linux");
+    await axios.get("https://sias.universitasmulia.ac.id/siam/cetak-biodata.html",{
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.95 Safari/537.36',
+            'Accept': 'text/html, text/plain, */*',
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Origin": "https://sias.universitasmulia.ac.id",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Dest": "empty",
+            "Referer": "https://sias.universitasmulia.ac.id/siam/login.html",
+            "Accept-Encoding": "gzip, deflate",
+            'Set-Cookie':_cookie,
+            'Cookie':_cookie
+        },
+    }).then((response) => {
+        if (response.status == 200) {
+            try {
+                
+                const jadwals = [];
+                const $ = cheerio.load(response.data);
+                if($("table").length <= 0){
+                    console.log("empty");
+                }
+                var hari = "";
+                $($("table tbody table")[2]).find("table tbody tr").each((i,el)=>{
+                    
+                    if($(el).find('th').length <= 0){
+                        if($(el).find('td').eq(0).attr('rowspan') == undefined || $(el).find('td').eq(0).attr('rowspan') == ""){
+                            const jadwal = {
+                                hari:hari,
+                                jam: $(el).find('td').eq(0).text(),
+                                kode: $(el).find('td').eq(1).text(),
+                                nama: $(el).find('td').eq(2).text(),
+                                sks: $(el).find('td').eq(3).text(),
+                                kelas: $(el).find('td').eq(4).text(),
+                                ruang: $(el).find('td').eq(5).text(),
+                                dosen: $(el).find('td').eq(6).text(),
+                            };
+                            jadwals.push(jadwal);
+                        } else {
+                            hari = $(el).find('td').eq(0).text();
+                            const jadwal = {
                                 hari: hari,
                                 jam: $(el).find('td').eq(1).text(),
                                 kode: $(el).find('td').eq(2).text(),
@@ -256,5 +341,6 @@ module.exports = {
     scrapePost:scrapePost,
     scrapePostDetail:scrapePostDetail,
     login:login,
-    getJadwal:getJadwal
+    getJadwal:getJadwal,
+    getBiodata:getBiodata
 };
