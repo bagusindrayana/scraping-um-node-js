@@ -32,7 +32,7 @@ app.get('/post/slug', async (req, res) => {
     res.status(results.status).json(results.data);
 });
 
-app.post('/login', async (req, res) => {
+app.post('/siam/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     console.log(req.body);
