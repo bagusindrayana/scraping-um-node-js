@@ -272,46 +272,23 @@ async function getBiodata(_cookie) {
         if (response.status == 200) {
             try {
                 
-                const jadwals = [];
+                const biodatas = [];
                 const $ = cheerio.load(response.data);
                 if($("table").length <= 0){
                     console.log("empty");
                 }
                 var hari = "";
-                $($("table tbody table")[2]).find("table tbody tr").each((i,el)=>{
+                $(".data_mhs table.uiTableList").find("tbody tr").each((i,el)=>{
                     
-                    if($(el).find('th').length <= 0){
-                        if($(el).find('td').eq(0).attr('rowspan') == undefined || $(el).find('td').eq(0).attr('rowspan') == ""){
-                            const jadwal = {
-                                hari:hari,
-                                jam: $(el).find('td').eq(0).text(),
-                                kode: $(el).find('td').eq(1).text(),
-                                nama: $(el).find('td').eq(2).text(),
-                                sks: $(el).find('td').eq(3).text(),
-                                kelas: $(el).find('td').eq(4).text(),
-                                ruang: $(el).find('td').eq(5).text(),
-                                dosen: $(el).find('td').eq(6).text(),
-                            };
-                            jadwals.push(jadwal);
-                        } else {
-                            hari = $(el).find('td').eq(0).text();
-                            const jadwal = {
-                                hari: hari,
-                                jam: $(el).find('td').eq(1).text(),
-                                kode: $(el).find('td').eq(2).text(),
-                                nama: $(el).find('td').eq(3).text(),
-                                sks: $(el).find('td').eq(4).text(),
-                                kelas: $(el).find('td').eq(5).text(),
-                                ruang: $(el).find('td').eq(6).text(),
-                                dosen: $(el).find('td').eq(7).text(),
-                            };
-                            jadwals.push(jadwal);
-                        }
+                    if($(el).find('td').attr('colspan') == undefined || $(el).find('td').attr('colspan') == ""){
+                        var c = $(el).find('td').eq(0).text();
+                        biodatas[c] = $(el).find('td').eq(1).text();
+                      
                     }
                 });
                 data = {
                     status: response.status,
-                    data: jadwals
+                    data: biodatas
                 }
             } catch (err) {
                 data = {
