@@ -272,7 +272,7 @@ async function getBiodata(_cookie) {
         if (response.status == 200) {
             try {
                 
-                const biodatas = [];
+                const biodatas = {};
                 const $ = cheerio.load(response.data);
                 if($("table").length <= 0){
                     console.log("empty");
@@ -282,10 +282,11 @@ async function getBiodata(_cookie) {
                     
                     if($(el).find('td').attr('colspan') == undefined || $(el).find('td').attr('colspan') == ""){
                         var c = $(el).find('td').eq(0).text();
-                        biodatas[c] = $(el).find('td').eq(1).text();
-                      
+                        biodatas[c.toLowerCase().replace(" ","_")] = $(el).find('td').eq(1).text().trim();
+                        
                     }
                 });
+                
                 data = {
                     status: response.status,
                     data: biodatas
