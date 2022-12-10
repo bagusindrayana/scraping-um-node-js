@@ -1,9 +1,14 @@
 const express = require('express');
 var cors = require('cors')
 const app = express();
+const bodyParser = require('body-parser')
 app.use(express.json()) // for parsing application/json
+app.use(express.text()) // this is for plan/text format
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-app.use(cors({ credentials: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json())
+
+// app.use(cors({ credentials: true }));
 const api = require('./api');
 
 app.get('/', (req, res) => {
@@ -30,12 +35,13 @@ app.get('/post/slug', async (req, res) => {
 app.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    console.log(req.body);
     const results = await api.login(username, password);
     res.status(results.status).json(results.data);
 });
 
 app.post('/siam/jadwal-kuliah', async (req, res) => {
-    const results = await api.getJadwal(req.headers['set-cookie']);
+    const results = await api.getJadwal(req.body._session);
     res.status(results.status).json(results.data);
 });
 
